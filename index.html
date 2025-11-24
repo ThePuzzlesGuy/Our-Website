@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Decision Helper</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Decision Helper</h1>
+
+    <div class="section">
+      <h2>What to Eat?</h2>
+      <button onclick="chooseEat()">Choose For Me</button>
+      <button onclick="chooseEat('in')">Choose In</button>
+      <button onclick="chooseEat('out')">Choose Out</button>
+    </div>
+
+    <div class="section">
+      <h2>What to Play?</h2>
+      <button onclick="choosePlay()">Choose For Me</button>
+      <button onclick="choosePlay('video')">Video Games</button>
+      <button onclick="choosePlay('board')">Board Games</button>
+    </div>
+
+    <div class="section">
+      <h2>What to Watch?</h2>
+      <button onclick="chooseWatch()">Choose For Me</button>
+    </div>
+
+    <div class="section">
+      <h2>What to Do?</h2>
+      <button onclick="chooseDo()">Choose For Me</button>
+      <button onclick="chooseDo('in')">Inside</button>
+      <button onclick="chooseDo('out')">Out</button>
+    </div>
+
+    <div id="result" class="result"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

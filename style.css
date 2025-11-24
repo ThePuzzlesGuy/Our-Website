@@ -1,46 +1,150 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  margin: 0;
-  padding: 0;
+/* ---------- Base ---------- */
+:root{
+  --bg1:#0f1020;
+  --bg2:#1b1e3a;
+  --brand:#7c9cf5;
+  --accent:#ffd166;
+  --text:#e9ecff;
+  --muted:#b9c0ff;
+  --card:#1b1f3f88;
+  --glass:rgba(255,255,255,0.08);
+  --ok:#2ecc71;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  color:var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+  background: radial-gradient(1200px 1200px at 10% 10%, #223 0%, transparent 60%) , linear-gradient(135deg,var(--bg1),var(--bg2));
+  overflow-x:hidden;
 }
 
-.container {
-  max-width: 600px;
-  margin: auto;
-  padding: 20px;
+/* background orbs */
+.bg::before,.bg::after{
+  content:"";
+  position:fixed; inset:auto;
+  width:40vmax;height:40vmax;border-radius:50%;
+  filter:blur(60px);opacity:.35; pointer-events:none;
+}
+.bg::before{background:#6a5acd; top:-10vmax; left:-10vmax;}
+.bg::after{background:#ff7f50; bottom:-12vmax; right:-12vmax;}
+
+.app-header, .app-footer{
+  position:relative;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 18px; gap:12px;
+}
+.app-header h1{
+  font-size: clamp(22px, 5vw, 32px);
+  margin:0;
+  letter-spacing:.5px;
+  background: linear-gradient(90deg,var(--text),var(--accent));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.app-footer{
+  justify-content:center;
+  color:var(--muted);
 }
 
-h1, h2 {
-  text-align: center;
+/* Buttons */
+button{
+  appearance:none; border:none; cursor:pointer;
+  border-radius:14px; padding:12px 16px; font-weight:700;
+}
+button.spin{
+  background: linear-gradient(180deg, var(--accent), #f4b942);
+  color:#222; box-shadow:0 10px 20px #0005, inset 0 -2px 0 #0003;
+  font-size: clamp(18px, 3.5vw, 22px);
+}
+button.ghost{
+  background:transparent; color:var(--muted);
+  outline:1px solid #ffffff22;
+}
+button.hidden{display:none}
+
+.btn-row{ display:flex; flex-wrap:wrap; gap:10px; }
+.btn-row button{ background: #2a2f5a; color:var(--text); }
+.btn-row button.active{ outline:2px solid var(--accent); box-shadow:0 0 0 4px #0004;}
+.subheader{ display:flex; flex-direction:column; gap:12px; margin-bottom:14px; }
+
+/* Cards */
+.cards-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:14px; padding:16px;
+}
+.card{
+  border-radius:18px; padding:16px;
+  background: linear-gradient(180deg,#ffffff0a,#00000033);
+  backdrop-filter: blur(6px);
+  border:1px solid #ffffff1a;
+  box-shadow: 0 10px 24px #0006, inset 0 1px 0 #ffffff12;
+  min-height:120px;
+  display:flex; flex-direction:column; gap:8px; justify-content:center;
+  transition:.35s transform, .35s opacity, .35s filter;
+  cursor:pointer;
+}
+.card h2{margin:0; font-size: clamp(16px, 3.5vw, 22px);}
+.card p{margin:0; color:var(--muted); font-size: .95rem;}
+.card:hover{transform:translateY(-3px);}
+
+/* Stage/panels */
+.stage{min-height:calc(100vh - 120px); display:flex; align-items:center; justify-content:center; flex-direction:column;}
+.subpanel{ width:min(900px, 92vw); background:var(--card); border:1px solid #ffffff1a; border-radius:20px; padding:16px; backdrop-filter: blur(10px); }
+.hidden{ display:none !important; }
+
+/* Reel / slot machine */
+.machine{ display:flex; flex-direction:column; align-items:center; gap:12px; }
+.marquee{
+  width:100%; text-align:center; color:#222; background:linear-gradient(90deg,var(--accent),#fff7d6,var(--accent));
+  -webkit-background-clip: text; background-clip:text; color:transparent;
+  font-weight:800; letter-spacing:2px; text-transform:uppercase; opacity:.9; font-size:12px;
+  animation: marquee 8s linear infinite;
+}
+@keyframes marquee{
+  0%{transform:translateX(0)} 100%{transform:translateX(-10%)}
+}
+.reel-wrap{
+  width:min(700px, 94vw);
+  height:110px;
+  border-radius:16px;
+  background:linear-gradient(180deg,#00000044,#00000088);
+  border:1px solid #ffffff24; box-shadow:inset 0 12px 26px #0009;
+  overflow:hidden;
+  position:relative;
+}
+.reel{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size: clamp(22px, 6vw, 38px);
+  font-weight:900; text-align:center;
+  padding:0 16px;
+  animation: none;
+  white-space:nowrap;
+}
+.reel.spin{
+  animation: spin 1.15s linear infinite;
+}
+/* base spin anim moves content leftward; JS swaps text to feel spinning */
+@keyframes spin{ from{transform:translateX(0)} to{transform:translateX(-40%)} }
+.controls{ display:flex; gap:10px; }
+.result{
+  min-height:36px; font-size: clamp(16px, 3.2vw, 20px); color:var(--muted);
 }
 
-.section {
-  background: white;
-  padding: 15px;
-  margin: 15px 0;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,.1);
-}
+/* Enter/exit animations */
+.enter{ animation: popin .35s ease both; }
+@keyframes popin{ from{opacity:0; transform:translateY(8px) scale(.98)} to{opacity:1; transform:none} }
+.fadeout{ animation: fadeout .35s ease forwards; filter:blur(0px); }
+@keyframes fadeout{ to{opacity:0; transform:scale(.98); filter:blur(2px);} }
 
-button {
-  width: 100%;
-  padding: 10px;
-  margin: 5px 0;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  background: #0078ff;
-  color: white;
-}
+/* Back button position on mobile */
+#backBtn{ margin-left:auto; }
 
-.result {
-  margin-top: 20px;
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0,0,0,.1);
+@media (min-width: 860px){
+  .cards-grid{ grid-template-columns: repeat(4, minmax(0,1fr)); }
+  .card{ min-height:160px; }
 }

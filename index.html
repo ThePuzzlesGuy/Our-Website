@@ -2,42 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Decision Helper</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Choice Spectacle</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Decision Helper</h1>
+  <div class="bg"></div>
+  <header class="app-header">
+    <h1>Choice Spectacle</h1>
+    <button id="backBtn" class="ghost hidden" aria-label="Back to main">← Back</button>
+  </header>
 
-    <div class="section">
-      <h2>What to Eat?</h2>
-      <button onclick="chooseEat()">Choose For Me</button>
-      <button onclick="chooseEat('in')">Choose In</button>
-      <button onclick="chooseEat('out')">Choose Out</button>
-    </div>
+  <main id="stage" class="stage">
+    <!-- Step 1: Category Cards -->
+    <section id="categories" class="cards-grid enter">
+      <article class="card" data-category="eat">
+        <h2>🍔 What to eat?</h2>
+        <p>Let fate pick dinner.</p>
+      </article>
+      <article class="card" data-category="play">
+        <h2>🎮 What to play?</h2>
+        <p>Video game or board game?</p>
+      </article>
+      <article class="card" data-category="watch">
+        <h2>📺 What to watch?</h2>
+        <p>Spin up a show.</p>
+      </article>
+      <article class="card" data-category="do">
+        <h2>✨ What to do?</h2>
+        <p>Inside, outside, adventure.</p>
+      </article>
+    </section>
 
-    <div class="section">
-      <h2>What to Play?</h2>
-      <button onclick="choosePlay()">Choose For Me</button>
-      <button onclick="choosePlay('video')">Video Games</button>
-      <button onclick="choosePlay('board')">Board Games</button>
-    </div>
+    <!-- Step 2: Sub-Options -->
+    <section id="subpanel" class="subpanel hidden">
+      <div class="subheader">
+        <h2 id="subTitle">Make a selection</h2>
+        <div id="subButtons" class="btn-row"></div>
+      </div>
+      <div id="machine" class="machine hidden">
+        <div class="marquee">No whammies... No whammies... STOP!</div>
+        <div class="reel-wrap">
+          <div class="reel" id="reel"></div>
+        </div>
+        <div class="controls">
+          <button id="spinBtn" class="spin">Spin</button>
+          <button id="reshuffleBtn" class="ghost">Reshuffle</button>
+        </div>
+        <div id="result" class="result" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+  </main>
 
-    <div class="section">
-      <h2>What to Watch?</h2>
-      <button onclick="chooseWatch()">Choose For Me</button>
-    </div>
-
-    <div class="section">
-      <h2>What to Do?</h2>
-      <button onclick="chooseDo()">Choose For Me</button>
-      <button onclick="chooseDo('in')">Inside</button>
-      <button onclick="chooseDo('out')">Out</button>
-    </div>
-
-    <div id="result" class="result"></div>
-  </div>
+  <footer class="app-footer">
+    <small>Built for Dante &amp; Alexander • Mobile‑first • Netlify‑ready</small>
+  </footer>
 
   <script src="script.js"></script>
 </body>

@@ -96,6 +96,25 @@ button.hidden{display:none}
 .subpanel{ width:min(900px, 92vw); background:var(--card); border:1px solid #ffffff1a; border-radius:20px; padding:16px; backdrop-filter: blur(10px); }
 .hidden{ display:none !important; }
 
+/* Decision strip (first decide sub-choice) */
+.decision-strip{
+  display:flex; align-items:center; justify-content:center;
+  gap:10px; margin:8px 0 16px;
+  min-height:34px;
+  font-weight:800;
+  color:var(--accent);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  opacity:.95;
+}
+.decision-strip .chip{
+  background:#2a2f5a; border:1px solid #ffffff22; padding:8px 12px; border-radius:999px;
+}
+.decision-strip.spin{
+  animation: flick 0.45s linear infinite;
+}
+@keyframes flick{ 50%{opacity:.7} }
+
 /* Reel / slot machine */
 .machine{ display:flex; flex-direction:column; align-items:center; gap:12px; }
 .marquee{
@@ -128,7 +147,6 @@ button.hidden{display:none}
 .reel.spin{
   animation: spin 1.15s linear infinite;
 }
-/* base spin anim moves content leftward; JS swaps text to feel spinning */
 @keyframes spin{ from{transform:translateX(0)} to{transform:translateX(-40%)} }
 .controls{ display:flex; gap:10px; }
 .result{

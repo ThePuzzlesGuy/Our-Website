@@ -57,6 +57,7 @@ const subpanel = document.getElementById('subpanel');
 const subButtons = document.getElementById('subButtons');
 const subTitle = document.getElementById('subTitle');
 const machine = document.getElementById('machine');
+const decisionStrip = document.getElementById('decisionStrip');
 const reel = document.getElementById('reel');
 const spinBtn = document.getElementById('spinBtn');
 const reshuffleBtn = document.getElementById('reshuffleBtn');
@@ -72,10 +73,10 @@ let lastPick = null;
 function pickRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function smoothHide(el){ el.classList.add('fadeout'); setTimeout(()=> el.classList.add('hidden'), 340); }
 function show(el){ el.classList.remove('hidden','fadeout'); }
+function hide(el){ el.classList.add('hidden'); }
 
-// Confetti (tiny, inline) -----
+// Confetti ---------------------
 function confettiBurst(){
-  // Simple text confetti
   const chars = ['★','✦','✧','❖','✺','✹','✶'];
   for(let i=0;i<16;i++){
     const s = document.createElement('span');
@@ -97,6 +98,34 @@ function confettiBurst(){
   }
 }
 
+// Decision animation (decide sub-choice first) -------
+function decideFirst(label, choices, onDone){
+  // label: "In/Out", etc. choices: [{key,label}, ...]
+  decisionStrip.innerHTML = `<span class="chip">Deciding: ${label}</span>`;
+  show(decisionStrip);
+  decisionStrip.classList.add('spin');
+
+  // cycle through labels quickly
+  let idx = 0;
+  const labels = choices.map(c=>c.label);
+  decisionStrip.dataset.timer && clearInterval(decisionStrip.dataset.timer);
+  const t = setInterval(()=>{
+    idx = (idx+1)%labels.length;
+    decisionStrip.innerHTML = `<span class="chip">Deciding: ${label}</span><span class="chip">${labels[idx]}</span>`;
+  }, 120);
+  decisionStrip.dataset.timer = t;
+
+  // stop after a beat with easing effect
+  const duration = 1200 + Math.random()*600; // 1.2–1.8s
+  setTimeout(()=>{
+    clearInterval(t);
+    decisionStrip.classList.remove('spin');
+    const chosen = choices[Math.floor(Math.random()*choices.length)];
+    decisionStrip.innerHTML = `<span class="chip">Chosen ${label}:</span><span class="chip" style="background:var(--ok); color:#021;">${chosen.label}</span>`;
+    setTimeout(()=> onDone(chosen.key), 550);
+  }, duration);
+}
+
 // Slot machine -----------------
 let spinTimer = null;
 function startSpin(){
@@ -105,15 +134,13 @@ function startSpin(){
   resultEl.textContent = '';
   reel.classList.add('spin');
 
-  // Shuffle preview cycling text
   let idx = 0;
   spinTimer = setInterval(()=>{
     idx = (idx+1)%currentList.length;
     reel.textContent = currentList[idx] + "  •  " + pickRandom(currentList) + "  •  " + pickRandom(currentList);
   }, 90);
 
-  // Ease-out timing
-  const duration = 1800 + Math.random()*1200; // 1.8-3.0s
+  const duration = 1800 + Math.random()*1200;
   setTimeout(stopSpin, duration);
 }
 
@@ -121,7 +148,6 @@ function stopSpin(){
   clearInterval(spinTimer);
   reel.classList.remove('spin');
 
-  // Weighted 'press your luck' decel + final
   let t = 0; const steps = 9;
   const stepper = () => {
     reel.textContent = pickRandom(currentList);
@@ -139,6 +165,7 @@ function stopSpin(){
   stepper();
 }
 
+// UI wiring --------------------
 function setSubButtons(cfg){
   subButtons.innerHTML = '';
   cfg.options.forEach(o=>{
@@ -156,35 +183,71 @@ function setSubButtons(cfg){
 
 function handleSubChoice(key){
   const cat = data[currentCategory];
+  hide(machine);
+  resultEl.textContent = '';
+  reel.textContent = '';
+
   if(currentCategory === 'eat'){
-    const mode = key === 'auto' ? (Math.random()<.5?'in':'out') : key;
-    currentList = cat.lists[mode];
-    show(machine);
-    reel.textContent = `Choosing ${mode.toUpperCase()}...`;
-    resultEl.textContent = '';
+    if(key === 'auto'){
+      decideFirst('In / Out', [
+        {key:'in', label:'In (cook/order-in)'},
+        {key:'out', label:'Out (restaurants)'}
+      ], decidedKey => {
+        currentList = cat.lists[decidedKey];
+        show(machine);
+        reel.textContent = `Choosing ${decidedKey.toUpperCase()}...`;
+        setTimeout(startSpin, 300);
+      });
+    } else {
+      hide(decisionStrip);
+      currentList = cat.lists[key];
+      show(machine);
+      reel.textContent = `Choosing ${key.toUpperCase()}...`;
+    }
   } else if(currentCategory === 'play'){
-    const mode = key === 'auto' ? (Math.random()<.5?'video':'board') : key;
-    currentList = cat.lists[mode];
-    show(machine);
-    reel.textContent = `Choosing ${mode === 'video' ? 'Video Game' : 'Board Game'}...`;
-    resultEl.textContent = '';
+    if(key === 'auto'){
+      decideFirst('Video / Board', [
+        {key:'video', label:'Video Game'},
+        {key:'board', label:'Board Game'}
+      ], decidedKey => {
+        currentList = cat.lists[decidedKey];
+        show(machine);
+        reel.textContent = `Choosing ${decidedKey === 'video' ? 'Video Game' : 'Board Game'}...`;
+        setTimeout(startSpin, 300);
+      });
+    } else {
+      hide(decisionStrip);
+      currentList = cat.lists[key];
+      show(machine);
+      reel.textContent = `Choosing ${key === 'video' ? 'Video Game' : 'Board Game'}...`;
+    }
   } else if(currentCategory === 'do'){
-    const mode = key === 'auto' ? (Math.random()<.5?'in':'out') : key;
-    currentList = cat.lists[mode];
-    show(machine);
-    reel.textContent = `Choosing ${mode.toUpperCase()}...`;
-    resultEl.textContent = '';
+    if(key === 'auto'){
+      decideFirst('Inside / Out', [
+        {key:'in', label:'Inside'},
+        {key:'out', label:'Out'}
+      ], decidedKey => {
+        currentList = cat.lists[decidedKey];
+        show(machine);
+        reel.textContent = `Choosing ${decidedKey.toUpperCase()}...`;
+        setTimeout(startSpin, 300);
+      });
+    } else {
+      hide(decisionStrip);
+      currentList = cat.lists[key];
+      show(machine);
+      reel.textContent = `Choosing ${key.toUpperCase()}...`;
+    }
   }
 }
 
 function goCategory(catKey){
   currentCategory = catKey;
-  // hide category grid with flourish
   smoothHide(categories);
-  // show subpanel UI
   show(subpanel);
-  document.getElementById('backBtn').classList.remove('hidden');
+  backBtn.classList.remove('hidden');
   machine.classList.add('hidden');
+  hide(decisionStrip);
   resultEl.textContent='';
   reel.textContent = '';
 
@@ -192,13 +255,11 @@ function goCategory(catKey){
   subTitle.textContent = cat.title;
 
   if(catKey === 'watch'){
-    // Direct spin with single list
     subButtons.innerHTML = '';
     show(machine);
     currentList = cat.lists.single;
     reel.textContent = 'Ready to spin...';
   } else {
-    // Show options row for category step 0
     setSubButtons(cat.steps[0]);
   }
 }
@@ -206,7 +267,7 @@ function goCategory(catKey){
 function goHome(){
   currentCategory = null;
   lastPick = null;
-  // reset UI
+  hide(decisionStrip);
   subpanel.classList.add('hidden');
   categories.classList.remove('hidden','fadeout');
   categories.classList.add('enter');
@@ -230,12 +291,11 @@ reshuffleBtn.addEventListener('click', ()=>{
   resultEl.textContent = '';
 });
 
-// Accessibility: key shortcuts
+// Key shortcuts
 document.addEventListener('keydown', (e)=>{
   if(e.key.toLowerCase()==='s') startSpin();
   if(e.key==='Escape' && !categories.classList.contains('hidden')) return;
   if(e.key==='Escape') goHome();
 });
 
-// Initial content
 reel.textContent = '';
